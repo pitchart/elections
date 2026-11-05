@@ -24,6 +24,7 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytest-testdox>=3.1.0",
     "pytest-watch>=4.2.0",
+    "robotframework>=7.5.1",
     "ruff>=0.15.0",
     "taskipy>=1.14.1",
 ]
@@ -83,9 +84,10 @@ format-check = "uv run ruff format --check ."
 # Types et tests
 typecheck = "uv run mypy src/"
 test = "uv run pytest"
+robot = "uv run robot --pythonpath src --pythonpath tests/robot/libraries --outputdir robot_results tests/robot"
 
 # Nettoyage de l'environnement
 clean = "uv run python -c \"import shutil; [shutil.rmtree(p, ignore_errors=True) for p in ['dist', 'coverage', '.pytest_cache', '.mypy_cache']]\""
 
 # Pipeline complète
-check = "task lint && task format-check && task typecheck && task test"
+check = "task lint && task format-check && task typecheck && task test && task robot"
