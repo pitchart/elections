@@ -99,6 +99,7 @@ target-version = "7"
 exclude = ["tests/RCN3410.robot"]
 
 [tool.robocop.lint]
+custom-rules = ["tests/robot/robocop_rules"]
 extend-select = [
     "KW01",
     "KW04",
