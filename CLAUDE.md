@@ -36,14 +36,20 @@ Depuis le dossier du langage concerné :
 
 ### Python : outillage
 
-`python/pyproject.toml` définit des tâches taskipy : `lint`, `lint-fix`, `format`, `format-check`, `typecheck` (mypy strict sur `src/`), `test`, `robot`, `check` (pipeline complète). Ruff est configuré avec une complexité McCabe maximale de 10 et `S101` (assert) autorisé uniquement dans `tests/`. `pytest` est lancé avec `--testdox --cov=src` par défaut.
+`python/pyproject.toml` définit des tâches taskipy (`uv run task <nom>`), nommées `intention` ou `intention:action` ou `intention:outil:action` (pas de tiret) :
+- `lint` (= `lint:ruff` + `lint:types` mypy strict sur `src/` + `test:robot:lint` Robocop) ; `lint:ruff` = `lint:ruff:check` (ruff check) + `lint:ruff:format` (ruff format --check)
+- `format` (corrige et formate tout : `format:ruff:fix` puis `format:ruff`)
+- `test` (= `test:unit` pytest + `test:robot` Robot Framework)
+- `check` : pipeline complète, `clean`
+
+Ruff est configuré avec une complexité McCabe maximale de 10 et `S101` (assert) autorisé uniquement dans `tests/`. `pytest` est lancé avec `--testdox --cov=src` par défaut. `lint:ruff:check` et `lint:ruff:format` échouent sur le code legacy de `src/` (lignes longues, complexité) : c'est la matière du kata.
 
 ### Python : tests Robot Framework
 
-Tout est sous `python/tests/robot/` : les `.robot` à la racine, les librairies Python dans `libraries/`, les fichiers ApprovalTests dans `approvals/` (un par scénario, nommé `elections.<nom_du_scénario>.approved.json`). Lancer avec `uv run task robot`. Les mots-clés Given/When/Then sont des mots-clés à arguments embarqués de `ElectionsLibrary`; `ApprovalLibrary.py` est un simple module utilitaire (pas une librairie Robot).
+Tout est sous `python/tests/robot/` : les `.robot` à la racine, les librairies Python dans `libraries/`, les fichiers ApprovalTests dans `approvals/` (un par scénario, nommé `elections.<nom_du_scénario>.approved.json`). Lancer avec `uv run task test:robot`, linter avec `uv run task test:robot:lint` (Robocop, avec la règle maison `BDD01` dans `robocop_rules/`). Les mots-clés Given/When/Then sont des mots-clés à arguments embarqués de `ElectionsLibrary`; `ApprovalLibrary.py` est un simple module utilitaire (pas une librairie Robot).
 
 ## État du travail en cours (branche `feat/robot-framework`)
 
 - Les tests Python utilisent ApprovalTests (`verify_as_json`) : les fichiers `*.approved.json` à côté des tests sont la référence, à relire avant de les accepter.
-- `python/tests/test_elections.py` est un brouillon non terminé : il appelle `vote_for` et `elector.vote_for` de façon incohérente (la variable `elector` est réaffectée). `python/tests/RCN3410.robot` est un squelette sans rapport, non exécuté. Les scénarios de `python/tests/robot/elections.robot` sont fonctionnels.
+- `python/tests/RCN3410.robot` est un squelette sans rapport, exclu de Robocop et non exécuté par `test:robot`. Les scénarios de `python/tests/robot/elections.robot` sont fonctionnels.
 - Le port Python n'a pas la même structure que les autres : les noms sont en snake_case (`vote_for`, `add_candidate`) et les types sont annotés (mypy strict).
