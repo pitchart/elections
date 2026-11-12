@@ -77,23 +77,23 @@ testpaths = ["tests"]
 # Analyse statique
 lint = "task lint:ruff && task lint:types && task test:robot:lint"
 "lint:ruff" = "task lint:ruff:check && task lint:ruff:format"
-"lint:ruff:check" = "uv run ruff check ."
-"lint:ruff:format" = "uv run ruff format --check ."
-"lint:types" = "uv run mypy src/"
+"lint:ruff:check" = "ruff check ."
+"lint:ruff:format" = "ruff format --check ."
+"lint:types" = "mypy src/"
 
 # Correction et formatage du code
 format = "task format:ruff:fix && task format:ruff"
-"format:ruff:fix" = "uv run ruff check . --fix"
-"format:ruff" = "uv run ruff format ."
+"format:ruff:fix" = "ruff check . --fix"
+"format:ruff" = "ruff format ."
 
 # Tests
 test = "task test:unit && task test:robot"
 "test:unit" = "pytest"
-"test:robot" = "uv run robot --pythonpath src --pythonpath tests/robot/libraries --outputdir robot_results tests/robot"
+"test:robot" = "robot --pythonpath src --pythonpath tests/robot/libraries --outputdir robot_results tests/robot"
 "test:robot:lint" = "uv run --env-file tests/robot/robocop.env robocop check tests/robot"
 
 # Nettoyage de l'environnement
-clean = "uv run python -c \"import shutil; [shutil.rmtree(p, ignore_errors=True) for p in ['dist', 'coverage', '.pytest_cache', '.mypy_cache', 'robot_results']]\""
+clean = "python -c \"import shutil; [shutil.rmtree(p, ignore_errors=True) for p in ['dist', 'coverage', '.pytest_cache', '.mypy_cache', 'robot_results']]\""
 
 # Pipeline complète
 check = "task lint && task test"
