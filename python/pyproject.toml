@@ -25,6 +25,7 @@ dev = [
     "pytest-testdox>=3.1.0",
     "pytest-watch>=4.2.0",
     "robotframework>=7.5.1",
+    "robotframework-robocop>=9.4.0",
     "ruff>=0.15.0",
     "taskipy>=1.14.1",
 ]
@@ -84,10 +85,33 @@ format-check = "uv run ruff format --check ."
 # Types et tests
 typecheck = "uv run mypy src/"
 test = "uv run pytest"
+lint-robot = "uv run --env-file tests/robot/robocop.env robocop check tests/robot"
 robot = "uv run robot --pythonpath src --pythonpath tests/robot/libraries --outputdir robot_results tests/robot"
 
 # Nettoyage de l'environnement
 clean = "uv run python -c \"import shutil; [shutil.rmtree(p, ignore_errors=True) for p in ['dist', 'coverage', '.pytest_cache', '.mypy_cache']]\""
 
 # Pipeline complète
-check = "task lint && task format-check && task typecheck && task test && task robot"
+check = "task lint && task format-check && task lint-robot && task typecheck && task test && task robot"
+
+[tool.robocop]
+target-version = "7"
+exclude = ["tests/RCN3410.robot"]
+
+[tool.robocop.lint]
+extend-select = [
+    "KW01",
+    "KW04",
+    "KW05",
+    "KW06",
+    "IMP06",
+    "IMP09",
+    "ARG08",
+]
+ignore = [
+    "DOC02",
+    "DOC03",
+]
+configure = [
+    "too-many-calls-in-test-case.max_calls=15",
+]
